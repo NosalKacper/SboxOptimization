@@ -27,11 +27,11 @@ std::vector<int> fastWalshHadmardTransform(std::vector<int> data) {
     return data;
 }
 
-int computeNonlinearityOfBinaryFunction(const std::vector<uint8_t>& input) {
+int computeNonlinearityOfBinaryFunction(const std::vector<int>& input) {
     int n = static_cast<int>(std::log2(input.size()));
 
     std::vector<int> transformInput(input.size());
-    std::transform(input.begin(), input.end(), transformInput.begin(), [](uint8_t val) { return (val == 0) ? 1 : -1; });
+    std::transform(input.begin(), input.end(), transformInput.begin(), [](int val) { return (val == 0) ? 1 : -1; });
 
     const std::vector<int> transformProduct = fastWalshHadmardTransform(transformInput);
 
@@ -45,21 +45,56 @@ int computeNonlinearityOfBinaryFunction(const std::vector<uint8_t>& input) {
 
 } // namespace
 
-double Nonlinearity::evaluate(const std::vector<uint8_t>& input) const {
+// double Nonlinearity::evaluate(const std::vector<int>& input) const {
+//     if(input.size() <= 1)
+//         throw std::invalid_argument("Input vector has to have more than one element!");
+
+//     int minimumNonlinearity = 200;
+//     for(size_t bit = 0; bit <= 7; ++bit) {
+
+//         std::vector<int> binaryFunction(input.size());
+
+//         std::transform(input.begin(), input.end(), binaryFunction.begin(), [bit](auto value) { return (value >> bit) & 1; });
+
+//         int tmp             = computeNonlinearityOfBinaryFunction(binaryFunction);
+//         minimumNonlinearity = std::min(tmp, minimumNonlinearity);
+//     }
+
+//     return minimumNonlinearity;
+// }
+
+double Nonlinearity::evaluate(const std::vector<int>& input) const {
     if(input.size() <= 1)
         throw std::invalid_argument("Input vector has to have more than one element!");
 
-    int maximumNonlinearity = 0;
-    for(size_t bit = 0; bit <= 7; ++bit) {
+    // Inicjalizujemy bardzo wysoką wartością, bo szukamy najsłabszego punktu (minimum)
+    int minimumNonlinearity = 256;
 
-        std::vector<uint8_t> binaryFunction(input.size());
+    // Iterujemy przez wszystkie możliwe kombinacje liniowe bitów wyjściowych (maski 1-255)
+    for(int mask = 1; mask <= 255; ++mask) {
+        std::vector<int> combinedFunction(input.size());
 
-        std::transform(input.begin(), input.end(), binaryFunction.begin(), [bit](auto value) { return (value >> bit) & 1; });
+        for(size_t i = 0; i < input.size(); ++i) {
+            // Obliczamy XOR bitów wejściowych wskazanych przez maskę
+            // Używamy __builtin_popcount lub prostej pętli, aby sprawdzić parzystość (XOR)
+            int combinedBit = 0;
+            int maskedValue = input[i] & mask;
 
-        int tmp             = computeNonlinearityOfBinaryFunction(binaryFunction);
-        maximumNonlinearity = std::max(tmp, maximumNonlinearity);
+            // Standardowy sposób na obliczenie XOR wszystkich bitów wyniku
+            // (parity of maskedValue)
+            combinedBit = __builtin_popcount(maskedValue) % 2;
+
+            combinedFunction[i] = combinedBit;
+        }
+
+        int currentNL = computeNonlinearityOfBinaryFunction(combinedFunction);
+
+        // S-Box jest tak silny, jak jego najsłabsza kombinacja
+        if(currentNL < minimumNonlinearity) {
+            minimumNonlinearity = currentNL;
+        }
     }
 
-    return maximumNonlinearity;
+    return (double)minimumNonlinearity;
 }
 } // namespace costfunctions

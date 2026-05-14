@@ -1,20 +1,17 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 namespace costfunctions {
 
 class CostFunction {
 public:
-    virtual ~CostFunction() = default;
-
-    double operator()(const std::vector<uint8_t>& input) const {
+    double operator()(const std::vector<int>& input) const {
         return evaluate(input);
     }
 
 protected:
-    virtual double evaluate(const std::vector<uint8_t>& input) const = 0;
+    virtual double evaluate(const std::vector<int>& input) const = 0;
 };
 
 } // namespace costfunctions
