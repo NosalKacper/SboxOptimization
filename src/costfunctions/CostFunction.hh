@@ -6,6 +6,8 @@ namespace costfunctions {
 
 class CostFunction {
 public:
+    virtual ~CostFunction() = default;
+
     double operator()(const std::vector<int>& input) const {
         return evaluate(input);
     }

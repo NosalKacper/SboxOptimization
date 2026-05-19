@@ -11,6 +11,10 @@ namespace costfunctions {
 
 namespace {
 
+bool isPowerOfTwo(const size_t input) {
+    return input != (1u << static_cast<int>(std::log2(input) + 0.5));
+}
+
 std::vector<int> fastWalshHadmardTransform(std::vector<int> data) {
     int n = data.size();
 
@@ -45,43 +49,23 @@ int computeNonlinearityOfBinaryFunction(const std::vector<int>& input) {
 
 } // namespace
 
-// double Nonlinearity::evaluate(const std::vector<int>& input) const {
-//     if(input.size() <= 1)
-//         throw std::invalid_argument("Input vector has to have more than one element!");
-
-//     int minimumNonlinearity = 200;
-//     for(size_t bit = 0; bit <= 7; ++bit) {
-
-//         std::vector<int> binaryFunction(input.size());
-
-//         std::transform(input.begin(), input.end(), binaryFunction.begin(), [bit](auto value) { return (value >> bit) & 1; });
-
-//         int tmp             = computeNonlinearityOfBinaryFunction(binaryFunction);
-//         minimumNonlinearity = std::min(tmp, minimumNonlinearity);
-//     }
-
-//     return minimumNonlinearity;
-// }
-
 double Nonlinearity::evaluate(const std::vector<int>& input) const {
     if(input.size() <= 1)
         throw std::invalid_argument("Input vector has to have more than one element!");
+    if(isPowerOfTwo(input.size()))
+        throw std::invalid_argument("Input vector has to have size of the power of 2!");
 
-    // Inicjalizujemy bardzo wysoką wartością, bo szukamy najsłabszego punktu (minimum)
-    int minimumNonlinearity = 256;
 
-    // Iterujemy przez wszystkie możliwe kombinacje liniowe bitów wyjściowych (maski 1-255)
+    int minimumNonlinearity = INT16_MAX;
+
     for(int mask = 1; mask <= 255; ++mask) {
         std::vector<int> combinedFunction(input.size());
 
         for(size_t i = 0; i < input.size(); ++i) {
-            // Obliczamy XOR bitów wejściowych wskazanych przez maskę
-            // Używamy __builtin_popcount lub prostej pętli, aby sprawdzić parzystość (XOR)
+
             int combinedBit = 0;
             int maskedValue = input[i] & mask;
 
-            // Standardowy sposób na obliczenie XOR wszystkich bitów wyniku
-            // (parity of maskedValue)
             combinedBit = __builtin_popcount(maskedValue) % 2;
 
             combinedFunction[i] = combinedBit;
@@ -89,7 +73,6 @@ double Nonlinearity::evaluate(const std::vector<int>& input) const {
 
         int currentNL = computeNonlinearityOfBinaryFunction(combinedFunction);
 
-        // S-Box jest tak silny, jak jego najsłabsza kombinacja
         if(currentNL < minimumNonlinearity) {
             minimumNonlinearity = currentNL;
         }
