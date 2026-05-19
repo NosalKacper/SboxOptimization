@@ -36,9 +36,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    std::cout << argv[0] << "" << argv[1] << std::endl;
-
     algorithms::genetic::GeneticAlgorithm genetic(populationSize, iterations, std::make_unique<costfunctions::Nonlinearity>());
 
-    genetic.run();
+    std::cout << std::fixed << std::setprecision(10) << genetic.run() << std::endl;
 }

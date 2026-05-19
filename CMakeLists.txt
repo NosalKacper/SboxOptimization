@@ -18,6 +18,7 @@ set(SOURCES
     src/main.cc
     src/algorithms/genetic/crossover/Crossover.cc
     src/costfunctions/Nonlinearity.cc
+    src/algorithms/genetic/Genetic.cc
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
