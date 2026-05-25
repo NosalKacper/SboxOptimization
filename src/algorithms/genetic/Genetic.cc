@@ -17,8 +17,8 @@ Chromosome createChromosome() {
 }
 } // namespace
 
-GeneticAlgorithm::GeneticAlgorithm(int populationSize, int iterations, std::unique_ptr<costfunctions::CostFunction> costFunction)
-: mIterations(iterations), fitness(std::move(costFunction)), mProgressBar(iterations) {
+GeneticAlgorithm::GeneticAlgorithm(int populationSize, int iterations, std::unique_ptr<costfunctions::CostFunction> costFunction, int mutationProbability)
+: mMutationProbability(mutationProbability), mIterations(iterations), fitness(std::move(costFunction)), mProgressBar(iterations) {
     mPopulation.resize(populationSize);
     std::ranges::generate(mPopulation, createChromosome);
     evaluatePopulation();
@@ -26,7 +26,7 @@ GeneticAlgorithm::GeneticAlgorithm(int populationSize, int iterations, std::uniq
 
 double GeneticAlgorithm::run() {
     for(int i = 0; i < mIterations; ++i) {
-        mProgressBar.update(i);
+        // mProgressBar.update(i);
         nextGeneration();
         evaluatePopulation();
     }
@@ -34,7 +34,6 @@ double GeneticAlgorithm::run() {
     const auto bestNonlinearity = std::max_element(
     mPopulation.begin(), mPopulation.end(), [](const Member& a, const Member& b) { return a.fitness.value() < b.fitness.value(); });
 
-    std::cout << "best: " << (*bestNonlinearity).fitness.value() << std::endl;
     return (*bestNonlinearity).fitness.value();
 }
 

@@ -24,19 +24,23 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    int populationSize = 0;
-    int iterations     = 0;
+    int populationSize      = 0;
+    int iterations          = 0;
+    int mutationProbability = 0;
 
     int opt;
-    while((opt = getopt(argc, argv, "p:i:")) != -1) {
+    while((opt = getopt(argc, argv, "p:i:m:")) != -1) {
         switch(opt) {
         case 'p': populationSize = std::stoi(optarg); break;
         case 'i': iterations = std::stoi(optarg); break;
+        case 'm': mutationProbability = std::stoi(optarg); break;
         default: printUsage(); return 1;
         }
     }
 
-    algorithms::genetic::GeneticAlgorithm genetic(populationSize, iterations, std::make_unique<costfunctions::Nonlinearity>());
+    algorithms::genetic::GeneticAlgorithm genetic(populationSize, iterations, std::make_unique<costfunctions::Nonlinearity>(), mutationProbability);
 
     std::cout << std::fixed << std::setprecision(10) << genetic.run() << std::endl;
+
+    return 0;
 }

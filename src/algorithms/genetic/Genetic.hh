@@ -27,7 +27,7 @@ using Population = std::vector<Member>;
 
 class GeneticAlgorithm {
 public:
-    GeneticAlgorithm(int populationSize, int iterations, std::unique_ptr<costfunctions::CostFunction> costFunction);
+    GeneticAlgorithm(int populationSize, int iterations, std::unique_ptr<costfunctions::CostFunction> costFunction, int mutationProbability);
 
     double run();
 
