@@ -18,6 +18,7 @@ set(SOURCES
     src/main.cc
     src/algorithms/genetic/crossover/Crossover.cc
     src/costfunctions/Nonlinearity.cc
+    src/costfunctions/DifferentialUniformity.cc
     src/algorithms/genetic/Genetic.cc
 )
 
