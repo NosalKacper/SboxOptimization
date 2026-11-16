@@ -59,3 +59,12 @@ build/
 .vscode/
 
 # End of https://www.toptal.com/developers/gitignore/api/cmake,c++
+
+### Study results and generated graphs ###
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf

@@ -86,11 +86,11 @@ def run_mutation_experiment():
         writer.writerow(["mutation_probability", "result"])
         writer.writerows(results)
 
-if __name__ == "__main__":
+def run_heat_map_experiment():
     results = []
     for x in range(25,275,25):
         for y in range(25,275,25):
-            result = run_multiple_parallel(runs=10,
+            result = run_multiple_parallel(runs=25,
                                             max_workers=8,
                                             mutation_probability=30,
                                             iterations=x,
@@ -102,4 +102,20 @@ if __name__ == "__main__":
         writer.writerow(["iterations", "populationSize", "result"])
         writer.writerows(results)
 
+if __name__ == "__main__":
+    populationSizes = [100,200,300,400,500]
+    results = []
+
+    for populationSize in populationSizes:
+        result = run_multiple_parallel(runs=50,
+                                            max_workers=10,
+                                            mutation_probability=30,
+                                            iterations=250,
+                                            populationSize=populationSize)
+        results.append([populationSize, result])
+
+    with open("result.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["populationSize", "result"])
+        writer.writerows(results)
     
